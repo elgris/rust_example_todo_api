@@ -15,10 +15,8 @@ use std::collections::HashMap;
 mod todo;
 use todo::*;
 
-fn get_version(_: &mut Request) -> IronResult<Response> {
-    let version = env!("CARGO_PKG_VERSION");
-    return Ok(Response::with((status::Ok, version)));
-}
+mod handlers;
+use handlers::*;
 
 fn main() {
     let matches = App::new("example-todo-app")
