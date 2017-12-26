@@ -6,7 +6,7 @@ use iron::prelude::*;
 use iron::{headers, status};
 use iron::modifiers::Header;
 use router::Router;
-use persistent::{State};
+use persistent::State;
 use std::error::Error;
 
 use todo::*;
@@ -17,20 +17,33 @@ pub fn get_version(_: &mut Request) -> IronResult<Response> {
 }
 
 pub fn get_todo(r: &mut Request) -> IronResult<Response> {
-    let id_option = r.extensions.get::<Router>().unwrap().find("id").unwrap().parse::<u32>();
+    let id_option = r.extensions
+        .get::<Router>()
+        .unwrap()
+        .find("id")
+        .unwrap()
+        .parse::<u32>();
 
     match id_option {
         Ok(id) => {
             let mutex = r.get::<State<Storage<Todo>>>().unwrap();
             let storage = mutex.read().unwrap();
             match storage.get(&id) {
-                Some(todo) => Ok(Response::with((status::Ok, 
-                    Header(headers::ContentType::json()), 
-                    serde_json::to_string(&todo).unwrap()))),
-                None => Ok(Response::with((status::NotFound, format!("todo with ID {} was not found", id))))
+                Some(todo) => Ok(Response::with((
+                    status::Ok,
+                    Header(headers::ContentType::json()),
+                    serde_json::to_string(&todo).unwrap(),
+                ))),
+                None => Ok(Response::with((
+                    status::NotFound,
+                    format!("todo with ID {} was not found", id),
+                ))),
             }
         }
-        Err(e) => Ok(Response::with((status::BadRequest, format!("could not parse input: {}", e.description()))))
+        Err(e) => Ok(Response::with((
+            status::BadRequest,
+            format!("could not parse input: {}", e.description()),
+        ))),
     }
 }
 
@@ -43,15 +56,25 @@ pub fn create_todo(r: &mut Request) -> IronResult<Response> {
             storage.add(todo);
 
             Ok(Response::with((status::Created)))
-        },
-        Ok(None) => Ok(Response::with((status::BadRequest, String::from("no data provided")))),
-        Err(err) => Ok(Response::with((status::BadRequest, format!("bad request body provided: {:?}", err.cause()))))
+        }
+        Ok(None) => Ok(Response::with(
+            (status::BadRequest, String::from("no data provided")),
+        )),
+        Err(err) => Ok(Response::with((
+            status::BadRequest,
+            format!("bad request body provided: {:?}", err.cause()),
+        ))),
     }
 }
 
 
 pub fn delete_todo(r: &mut Request) -> IronResult<Response> {
-    let id_option = r.extensions.get::<Router>().unwrap().find("id").unwrap().parse::<u32>();
+    let id_option = r.extensions
+        .get::<Router>()
+        .unwrap()
+        .find("id")
+        .unwrap()
+        .parse::<u32>();
 
     match id_option {
         Ok(id) => {
@@ -60,6 +83,9 @@ pub fn delete_todo(r: &mut Request) -> IronResult<Response> {
             storage.remove(&id);
             Ok(Response::with((status::NoContent)))
         }
-        Err(e) => Ok(Response::with((status::BadRequest, format!("could not parse input: {}", e.description()))))
+        Err(e) => Ok(Response::with((
+            status::BadRequest,
+            format!("could not parse input: {}", e.description()),
+        ))),
     }
 }
