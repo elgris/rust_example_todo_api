@@ -1,5 +1,6 @@
 
 pub struct Todo {
+    #[serde(default)]
     id: u32,
     content: String
 }
@@ -10,8 +11,8 @@ pub trait RecordId<T> {
 }
 
 impl RecordId<u32> for Todo {
-    pub fn set_id(&mut self, id: u32) { self.id = id }
-    pub fn id(self) -> u32 { self.id }
+    fn set_id(&mut self, id: u32) { self.id = id }
+    fn id(self) -> u32 { self.id }
 }
 
 pub struct Storage<V: RecordId<u32>> {

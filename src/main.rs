@@ -4,6 +4,9 @@ extern crate router;
 extern crate persistent;
 extern crate bodyparser;
 
+#[macro_use] 
+extern crate serde_derive;
+
 use clap::App;
 use iron::prelude::*;
 use iron::status;

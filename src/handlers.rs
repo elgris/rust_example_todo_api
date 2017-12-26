@@ -1,8 +1,6 @@
 extern crate iron;
 extern crate serde_json;
-
-#[macro_use] 
-extern crate serde_derive;
+extern crate bodyparser;
 
 use iron::prelude::*;
 use iron::{headers, status};
@@ -32,5 +30,20 @@ pub fn get_todo(r: &mut Request) -> IronResult<Response> {
             }
         }
         Err(e) => Ok(Response::with((status::BadRequest, format!("could not parse input: {}", e.description()))))
+    }
+}
+
+fn create_todo(r: &mut Request) -> IronResult<Response> {
+    let body = r.get::<bodyparser::Struct<Todo>>();
+    match body {
+        Ok(Some(todo)) => {
+            let mutex = r.get::<State<Storage<Todo>>>().unwrap();
+            let mut storage = mutex.write().unwrap();
+            storage.add(todo);
+
+            Ok(Response::with((status::Created)))
+        },
+        Ok(None) => Ok(Response::with((status::BadRequest, String::from("no data provided")))),
+        Err(err) => Ok(Response::with((status::BadRequest, format!("bad request body provided: {:?}", err.cause()))))
     }
 }
