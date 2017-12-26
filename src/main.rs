@@ -9,11 +9,8 @@ extern crate serde_derive;
 
 use clap::App;
 use iron::prelude::*;
-use iron::status;
-use iron::typemap::Key;
 use router::Router;
 use persistent::{State, Read};
-use std::collections::HashMap;
 
 mod todo;
 use todo::*;
@@ -32,7 +29,7 @@ fn main() {
     router.get("/version", get_version, "version");
     router.get("/todo/:id", get_todo, "get_todo");
     router.delete("/todo/:id", delete_todo, "delete_todo");
-    router.post("/todo/:id", create_todo, "create_todo");
+    router.post("/todo", create_todo, "create_todo");
     
     let mut chain = Chain::new(router);
     chain.link_before(Read::<bodyparser::MaxBodyLength>::one(8192));

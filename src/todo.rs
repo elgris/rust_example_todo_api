@@ -1,4 +1,10 @@
+extern crate serde_json;
+extern crate iron;
 
+use iron::typemap::Key;
+use std::collections::HashMap;
+
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Todo {
     #[serde(default)]
     id: u32,
