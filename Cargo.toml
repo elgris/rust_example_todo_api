@@ -1,5 +1,5 @@
 [package]
-name = "todo-app"
+name = "example-todo-app"
 version = "0.0.1"
 
 [dependencies]
